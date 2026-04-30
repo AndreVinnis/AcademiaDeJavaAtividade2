@@ -39,6 +39,10 @@ public class SchoolSystem {
                    System.out.println(e.getMessage());
                    legalName = false;
                }
+               catch (Exception e){
+                   System.out.println("Houve um erro inesperado no sistema");
+                   legalName = false;
+               }
             } while (!legalName);
 
             for(int j = 0; j < studentGrades.length; j ++){
@@ -51,6 +55,10 @@ public class SchoolSystem {
                     }
                     catch (IllegalGradeException e){
                         System.out.println(e.getMessage());
+                        legalGrade = false;
+                    }
+                    catch (Exception e){
+                        System.out.println("Houve um erro inesperado no sistema");
                         legalGrade = false;
                     }
                 } while (!legalGrade);
@@ -69,34 +77,12 @@ public class SchoolSystem {
     }
 
     private void validateName(String name) throws IllegalNameException {
-        /*
-         * Essa solução não é a mais correta. Porém, pela limitação de não poder usar um if e
-         * utilizar um operador ternário aqui também não resolve o problema de forma adequada,
-         * a solução que encontrei foi de utilizar o switch dessa forma somente para lançar a exceção.
-         * Pois, de qualquer modo, eu precisaria validar a palavra para lançar ou não a exceção.
-         */
-        boolean legalName = name.length() >= 3;
-        switch (String.valueOf(legalName)){
-            case "false":
-                throw new IllegalNameException("O nome precisa ter pelo menos 3 caracteres!");
-            default:
-                break;
-        }
+        Optional.ofNullable(name).filter(n -> n.trim().length() >= 3)
+                .orElseThrow(() -> new IllegalNameException("O nome precisa ter pelo menos 3 caracteres!"));
     }
 
-    private void validateGrade(double grade) throws IllegalNameException {
-        /*
-         * Essa solução não é a mais correta. Porém, pela limitação de não poder usar um if e
-         * utilizar um operador ternário aqui também não resolve o problema de forma adequada,
-         * a solução que encontrei foi de utilizar o switch dessa forma somente para lançar a exceção.
-         * Pois, de qualquer modo, eu precisaria validar a nota para lançar ou não a exceção.
-         */
-        boolean legalGrade = (grade >= 0 && grade <= 100);
-        switch (String.valueOf(legalGrade)){
-            case "false":
-                throw new IllegalGradeException("A nota inserida precisa ser pelo menos 0 e no máximo 100!");
-            default:
-                break;
-        }
+    private void validateGrade(int grade) throws IllegalGradeException {
+        Optional.of(grade).filter(n -> n >= 0 && n <= 100)
+                .orElseThrow(() -> new IllegalGradeException("A nota inserida precisa ser pelo menos 0 e no máximo 100!"));
     }
 }
